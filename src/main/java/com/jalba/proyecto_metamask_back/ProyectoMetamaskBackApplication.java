@@ -27,8 +27,8 @@ public class ProyectoMetamaskBackApplication {
                 .password(passwordEncoder().encode("1234"))
                 .roles("USER")
                 .build(),
-                User.withUsername("dani")
-                        .password(passwordEncoder().encode("123"))
+                User.withUsername("habber")
+                        .password(passwordEncoder().encode("habber"))
                         .roles("USER")
                         .build());
     }
