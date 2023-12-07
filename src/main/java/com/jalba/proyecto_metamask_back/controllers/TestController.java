@@ -12,7 +12,7 @@ public class TestController {
         return "Hello World";
     }
 
-    @CrossOrigin(origins = "http://localhost:3000")
+    //@CrossOrigin(origins = "http://localhost:3000")
     @GetMapping("/verifytoken")
     public void verifyToken() {
 

@@ -55,7 +55,7 @@ public class WebConf {
     .and()
     .addFilterAfter(jwtRequestFilter, UsernamePasswordAuthenticationFilter.class)
     .authorizeHttpRequests(authorize -> authorize
-        .requestMatchers("/authenticate", "/temporizer").permitAll()
+        .requestMatchers("/authenticate","/participants/**", "/sorteo/**").permitAll()
         .anyRequest().authenticated()
     );
 
