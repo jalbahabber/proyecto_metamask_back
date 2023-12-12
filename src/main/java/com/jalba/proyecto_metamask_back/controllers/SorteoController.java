@@ -5,6 +5,7 @@ import java.util.List;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -30,5 +31,12 @@ public class SorteoController {
     public ResponseEntity<List<Sorteo>> getAllDraws() {
         sorteoService.getAllSorteos();
         return ResponseEntity.ok(sorteoService.getAllSorteos());
+    }
+
+     @GetMapping("/{sorteoId}/ganador")
+    public ResponseEntity<String> obtenerGanadorDelSorteo(@PathVariable String sorteoId) {
+
+        String ganador = sorteoService.obtenerGanadorPorId(sorteoId);
+            return ResponseEntity.ok(ganador);
     }
 }

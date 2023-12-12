@@ -24,4 +24,5 @@ public class Sorteo {
     public Boolean ended;
 
     public List<String> participants;
+    
 }

@@ -67,4 +67,17 @@ public class SorteoService {
 
     }
 
+
+    public String obtenerGanadorPorId(String sorteoId) {
+        Sorteo sorteo = sorteoRepository.findById(sorteoId).get();
+
+        if (sorteo != null) {
+            return sorteo.getWinner();
+            
+        } else {
+            return null;
+        }
+        
+    }
+
 }
