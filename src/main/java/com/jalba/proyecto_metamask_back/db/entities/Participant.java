@@ -1,5 +1,7 @@
 package com.jalba.proyecto_metamask_back.db.entities;
 
+import java.util.Date;
+
 import org.springframework.data.annotation.Id;
 import org.springframework.data.mongodb.core.mapping.Document;
 
@@ -13,9 +15,14 @@ import lombok.NoArgsConstructor;
 @Document(collection = "participants")
 public class Participant {
 
-public String id;
+    @Id
+    private String id;
 
-public String name;
+    private String number;
 
-public String wallet;
+    public String name;
+
+    public String wallet;
+
+    public String sorteo;
 }

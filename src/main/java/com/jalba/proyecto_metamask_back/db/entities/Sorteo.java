@@ -1,6 +1,7 @@
 package com.jalba.proyecto_metamask_back.db.entities;
 
 import java.util.ArrayList;
+import java.util.List;
 
 import org.springframework.data.annotation.Id;
 import org.springframework.data.mongodb.core.mapping.Document;
@@ -22,5 +23,5 @@ public class Sorteo {
 
     public Boolean ended;
 
-    public String[] participants;
+    public List<String> participants;
 }

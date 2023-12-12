@@ -5,6 +5,8 @@ import java.util.List;
 import java.util.Random;
 
 import org.bson.Document;
+import org.bson.conversions.Bson;
+import org.bson.types.ObjectId;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
@@ -15,6 +17,8 @@ import com.mongodb.client.MongoClient;
 import com.mongodb.client.MongoClients;
 import com.mongodb.client.MongoCollection;
 import com.mongodb.client.MongoDatabase;
+import com.mongodb.client.model.Filters;
+import com.mongodb.client.model.Updates;
 
 @Service
 public class ParticipantService {
@@ -28,11 +32,18 @@ public class ParticipantService {
       // nameRepository.save(name);
       MongoClient mc = MongoClients.create(url);
       MongoDatabase mdb = mc.getDatabase("metamask_app");
-      MongoCollection mcol = mdb.getCollection("participants");
-      Document doc = new Document("id", p.getId())
-            .append("wallet", p.getWallet())
-            .append("name", p.getName());
-      mcol.insertOne(doc);
+      MongoCollection<Document> mcol = mdb.getCollection("participants");
+      MongoCollection<Document> sorteoCol = mdb.getCollection("draws");
+      
+      Document participantDoc = new Document("number", p.getNumber())
+          .append("wallet", p.getWallet())
+          .append("name", p.getName())
+          .append("sorteo", p.getSorteo());
+      
+      mcol.insertOne(participantDoc);
+      Bson filter = Filters.eq("_id", new ObjectId(p.getSorteo()));
+      Bson update = Updates.addToSet("participants", p.getNumber());
+      sorteoCol.updateOne(filter, update);
 
    }
 
@@ -41,13 +52,16 @@ public class ParticipantService {
 
       if (!participants.isEmpty()) {
          Participant ultimoParticipante = participants.get(participants.size() - 1);
-         int ultimoId = Integer.parseInt(ultimoParticipante.getId());
-         ;
-         int nuevoId = ultimoId + 1;
+         String ultimoId = ultimoParticipante.getNumber();
 
-         return String.valueOf(nuevoId);
+         if (ultimoId == null || ultimoId.isEmpty()) {
+            return "1";
+         }
+
+         int ultimoNumero = Integer.parseInt(ultimoId);
+         int nuevoNumero = ultimoNumero + 1;
+         return String.valueOf(nuevoNumero);
       } else {
-
          return "1";
       }
 

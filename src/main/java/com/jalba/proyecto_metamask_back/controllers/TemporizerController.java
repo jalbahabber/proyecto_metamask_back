@@ -20,7 +20,6 @@ import com.jalba.proyecto_metamask_back.db.services.SorteoService;
 @RestController
 public class TemporizerController {
 
-    // private String[] names;
     @Autowired
     SorteoService sorteoService;
 
@@ -28,22 +27,28 @@ public class TemporizerController {
     @PostMapping("/temporizer")
     public void temporize() {
         String id = sorteoService.createSorteo();
-        ScheduledExecutorService executorService = Executors.newSingleThreadScheduledExecutor();
         System.out.println(id);
+
+        ScheduledExecutorService executorService = Executors.newSingleThreadScheduledExecutor();
         Runnable chooseWinnerTask = () -> {
-            String winner = null;
-            Sorteo s = sorteoService.findSorteo(id).get();
-            String[] participants = s.getParticipants();
-            if (participants != null && participants.length != 0) {
+            try {
+                Sorteo s = sorteoService.findSorteo(id).orElseThrow(() -> new RuntimeException("Sorteo no encontrado"));
+                List<String> participants = s.getParticipants();
 
-                Random random = new Random();
-                int winnerIndex = random.nextInt(participants.length - 1);
-                winner = participants[winnerIndex];
+                if (participants != null && !participants.isEmpty()) {
+                    Random random = new Random();
+                    int winnerIndex = random.nextInt(participants.size());
+                    String winner = participants.get(winnerIndex);
+                    s.setWinner(winner);
+                }
+
+                s.setEnded(true);
+                sorteoService.saveSorteo(s);
+            } catch (Exception e) {
+
             }
-            s.setWinner(winner);
-            sorteoService.saveSorteo(s);
         };
-        executorService.schedule(chooseWinnerTask, 60, TimeUnit.SECONDS);
-    }
 
+        executorService.schedule(chooseWinnerTask, 30, TimeUnit.SECONDS);
+    }
 }

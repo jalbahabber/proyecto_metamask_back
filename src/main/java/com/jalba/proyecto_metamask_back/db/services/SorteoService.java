@@ -11,9 +11,8 @@ import com.mongodb.client.MongoClients;
 import com.mongodb.client.MongoCollection;
 import com.mongodb.client.MongoDatabase;
 import com.mongodb.client.result.InsertOneResult;
-
-import java.util.List;
-import java.util.Optional;
+import static com.mongodb.client.model.Filters.eq;
+import java.util.*;
 
 import org.bson.Document;
 import org.bson.types.ObjectId;
@@ -29,39 +28,40 @@ public class SorteoService {
     public String createSorteo() {
         // nameRepository.save(name);
         Sorteo s = new Sorteo();
+        List<String> emptyList = new ArrayList<>();
         s.setEnded(false);
         MongoClient mc = MongoClients.create(url);
         MongoDatabase mdb = mc.getDatabase("metamask_app");
         MongoCollection mcol = mdb.getCollection("draws");
         Document doc = new Document("winner", s.getWinner())
-                .append("participants", s.getParticipants())
-                .append("ended", s.getEnded());
-          InsertOneResult result = mcol.insertOne(doc);
-
-    String insertedId = result.getInsertedId().asObjectId().getValue().toString();
-        return insertedId;
-    }
-
-        public String saveSorteo(Sorteo s) {
-    
-        MongoClient mc = MongoClients.create(url);
-        MongoDatabase mdb = mc.getDatabase("metamask_app");
-        MongoCollection mcol = mdb.getCollection("draws");
-        Document doc = new Document("winner", s.getWinner())
-                .append("participants", s.getParticipants())
+                .append("participants", emptyList)
                 .append("ended", s.getEnded());
         InsertOneResult result = mcol.insertOne(doc);
 
-        String insertedId = result.getInsertedId().toString();
-
+        String insertedId = result.getInsertedId().asObjectId().getValue().toString();
         return insertedId;
     }
+
+    public void saveSorteo(Sorteo s) {
+        MongoClient mc = MongoClients.create(url);
+        MongoDatabase mdb = mc.getDatabase("metamask_app");
+        MongoCollection<Document> mcol = mdb.getCollection("draws");
+        
+        Document updateFields = new Document();
+        updateFields.append("winner", s.getWinner());
+        updateFields.append("ended", s.getEnded());
+        
+        Document updateQuery = new Document("$set", updateFields);
+        
+        mcol.findOneAndUpdate(eq("_id", new ObjectId(s.getId())), updateQuery);
+    }
+
 
     public List<Sorteo> getAllSorteos() {
         return sorteoRepository.findAll();
     }
 
-    public Optional<Sorteo> findSorteo(String id){
+    public Optional<Sorteo> findSorteo(String id) {
         Optional<Sorteo> s = sorteoRepository.findById(id);
         return s;
 
