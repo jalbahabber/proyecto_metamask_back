@@ -13,6 +13,7 @@ import org.springframework.web.bind.annotation.RestController;
 import com.jalba.proyecto_metamask_back.db.entities.Participant;
 import com.jalba.proyecto_metamask_back.db.services.ParticipantService;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestParam;
 
 
@@ -37,4 +38,10 @@ public class ParticipantsController {
         return ResponseEntity.ok(participantService.devuelveId());
     }
     
+    @GetMapping("/devuelveWallet/{participantNumber}")
+    public ResponseEntity<String> devuelveWallet(@PathVariable String participantNumber){
+        String wallet = participantService.devuelveWallet(participantNumber);
+        return ResponseEntity.ok(wallet);
+        
+    }
 }

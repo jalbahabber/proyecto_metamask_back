@@ -9,7 +9,10 @@ import org.bson.conversions.Bson;
 import org.bson.types.ObjectId;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
 
 import com.jalba.proyecto_metamask_back.db.entities.Participant;
 import com.jalba.proyecto_metamask_back.db.repositories.ParticipantRepository;
@@ -34,12 +37,12 @@ public class ParticipantService {
       MongoDatabase mdb = mc.getDatabase("metamask_app");
       MongoCollection<Document> mcol = mdb.getCollection("participants");
       MongoCollection<Document> sorteoCol = mdb.getCollection("draws");
-      
+
       Document participantDoc = new Document("number", p.getNumber())
-          .append("wallet", p.getWallet())
-          .append("name", p.getName())
-          .append("sorteo", p.getSorteo());
-      
+            .append("wallet", p.getWallet())
+            .append("name", p.getName())
+            .append("sorteo", p.getSorteo());
+
       mcol.insertOne(participantDoc);
       Bson filter = Filters.eq("_id", new ObjectId(p.getSorteo()));
       Bson update = Updates.addToSet("participants", p.getNumber());
@@ -66,4 +69,25 @@ public class ParticipantService {
       }
 
    }
+
+   public String devuelveWallet(String participantNumber) {
+      try (MongoClient mc = MongoClients.create(url)) {
+         MongoDatabase mdb = mc.getDatabase("metamask_app");
+         MongoCollection<Document> mcol = mdb.getCollection("participants");
+
+         Document query = new Document("number", participantNumber);
+         Document participant = mcol.find(query).first();
+
+         if (participant != null) {
+            String wallet = participant.getString("wallet");
+            return wallet;
+         } else {
+            return "";
+         }
+      } catch (Exception e) {
+         e.printStackTrace();
+         return "";
+      }
+   }
+
 }
